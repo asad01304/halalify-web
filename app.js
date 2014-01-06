@@ -4,8 +4,7 @@
  */
 
 var express = require('express')
-  , routes = require('./routes')
-  , user = require('./routes/user')
+  , editor = require('./editor')
   , http = require('http')
   , path = require('path');
 
@@ -37,19 +36,24 @@ app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
-app.get('/', routes.index);
-app.post('/', routes.editor);
+var mysql = require('mysql');
+var connection = mysql.createConnection({
+    host     : 'localhost',
+    user     : 'root',
+    password : 'root',
+    database : 'purified'
+});
+connection.connect();
+app.set('db', connection);
 
 
-app.get('/users', user.list);
+app.get('/',          editor.index);
+app.get('/editor',    editor.editor);
+app.get('/proxy',     editor.proxy);
+app.post('/share',    editor.sharePost);
+app.get('/share/:id', editor.share);
+
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
 });
-
-
-
-//http://robdodson.me/blog/2012/05/31/how-to-use-ejs-in-express/
-//https://npmjs.org/package/express3-ejs-layout
-//http://robdodson.me/blog/2012/09/03/javascript-design-patterns-factory/
-//https://github.com/visionmedia/ejs#includes

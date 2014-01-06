@@ -7,6 +7,7 @@ function scrape(url, func){
 		return ph.createPage(function(page){
 			return page.open(url, function(status){
 				//page.injectJs('http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js', function() {
+				//page.injectJs('http://localhost:3000/js/app.js', function() {
 					return page.evaluate((function(){
 						
 						var scripts = document.getElementsByTagName('script'),
