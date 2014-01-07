@@ -4,7 +4,7 @@
  */
 
 var express = require('express')
-  , editor = require('./editor')
+  , editor = require('./routes/editor')
   , http = require('http')
   , path = require('path');
 
