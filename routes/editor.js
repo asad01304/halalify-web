@@ -18,7 +18,7 @@ exports.share = function(req, res){
 	
 	if(!id) return false;
 
-	var inject = "<script id=purify-injection type=text/javascript src=/js/libs/jquery.js></script>" ;
+	var inject = "<script id=purify-injection type=text/javascript src=http://localhost:3000/js/libs/jquery.js></script>" ;
 	
 	db.query("SELECT * FROM shares where id = ? limit 0 , 1", id,  function(err, rows) {
 
@@ -31,11 +31,25 @@ exports.share = function(req, res){
         	inject += "<script type=text/javascript>" +
 				"$('" + query + "').css({visibility:'hidden'});" +
 			"</script>" ;
-	
+			var url  = rows[0].url;
+			var host = require('url').parse(url);
+			var base = '<base href="http://' + host.host + '" >';
 
-	        phantom.scrape(rows[0].url, function(html){
-	        	html = doInjection(html, inject);
-				res.send(html);
+
+			require('http').get(url, function(resp){
+				
+				resp.on('data', function(chunk){
+					res.write(
+						chunk.toString()
+							 .replace("<head>" ,  "<head>"  + base)
+							 .replace("</body>" , "</body>" + inject) 
+					);
+			  	}).on('end', function(chunk){
+					res.end();
+		  		});
+
+			}).on("error", function(e){
+		  		console.log("Got error: " + e.message);
 			});
     	}
     });
@@ -58,13 +72,29 @@ exports.sharePost = function(req, res){
 exports.proxy = function(req, res){
 
 	var url    = req.query.url;
-	var inject = "<script id=purify-injection type=text/javascript src=/js/inject.js></script>" + 
-				 "<link rel=stylesheet type=text/css href=/stylesheets/inject.css>";
+	var inject = "<script id=purify-injection type=text/javascript src='http://localhost:3000/js/inject.js'></script>" + 
+				 "<link rel=stylesheet type=text/css href='http://localhost:3000/stylesheets/inject.css'>";
 
-	phantom.scrape(url, function(html){
-		html = doInjection(html, inject);
-		res.send(html);
+	var host = require('url').parse(url);
+	var base = '<base href="http://' + host.host + '" >';
+
+
+	require('http').get(url, function(resp){
+		
+		resp.on('data', function(chunk){
+			res.write(
+				chunk.toString()
+					 .replace("<head>" ,  "<head>"  + base)
+					 .replace("</body>" , "</body>" + inject) 
+			);
+	  	}).on('end', function(chunk){
+			res.end();
+  		});
+
+	}).on("error", function(e){
+  		console.log("Got error: " + e.message);
 	});
+	
 };
 
 

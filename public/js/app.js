@@ -108,16 +108,14 @@ _Putify = {
 
 			return false;
 		}
-
+		
 		return getMyQuery(dom);
 	}
-
 }
 
 $(window).ready(function(){
 	
 	var $doc = $(document), hg = $doc.height(), wd = $doc.width(); 
 	var $proxy = $('#proxy-frame') , pos = $proxy.position(); 
-	
 	$proxy.width(wd).height(hg - pos.top);
 });
