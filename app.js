@@ -50,9 +50,8 @@ app.set('db', connection);
 app.get('/',          editor.index);
 app.get('/editor',    editor.editor);
 app.get('/proxy',     editor.proxy);
-app.post('/share',    editor.sharePost);
-app.get('/share/:id', editor.share);
 
+app.get('/purify/:url/:query', editor.purify);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));

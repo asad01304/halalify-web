@@ -42,22 +42,33 @@ _Putify = {
 
 		console.log(this.getXPaths(e.target));
 	},
+	// goNext : function(){
 
+	// 	var data = {
+	// 		url : $('#url').val(), 
+	// 		items : this.getPXpaths()
+	// 	}
+
+
+
+
+	// 	$.post('/share', data, function(data){
+	// 		if(data && data.id){
+	// 			window.location.href = '/share/' + data.id;
+	// 		}
+	// 		console.log(data);
+	// 	}, 'json');
+
+	// },
 	goNext : function(){
 
-		var data = {
-			url : $('#url').val(), 
-			items : this.getPXpaths()
-		}
+		var url = $('#url').val(); 
+		var items = this.getPXpaths();
+		var selector = items.join(", ");
 
-		$.post('/share', data, function(data){
-			if(data && data.id){
-				window.location.href = '/share/' + data.id;
-			}
-			console.log(data);
-		}, 'json')
-
+		window.location.href = '/purify/' + encodeURIComponent(url) +'/' + encodeURIComponent(selector);
 	},
+	
 	getPXpaths : function(){
 		
 		var doms = this.$scope.find('.purified') ;
@@ -108,7 +119,7 @@ _Putify = {
 
 			return false;
 		}
-		
+
 		return getMyQuery(dom);
 	}
 }

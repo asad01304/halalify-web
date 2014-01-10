@@ -69,6 +69,39 @@ exports.sharePost = function(req, res){
     });
 }
 
+exports.purify = function(req, res){
+	
+	var url	  = req.params.url;
+	var query = req.params.query;
+	
+	var inject = "<script id=purify-injection type=text/javascript src=http://localhost:3000/js/libs/jquery.js></script>" +
+			"<script type=text/javascript>" +
+				"$('" + query + "').css({visibility:'hidden'});" +
+			"</script>" ;
+			
+	var host = require('url').parse(url);
+	var base = '<base href="http://' + host.host + '" >';
+
+
+	require('http').get(url, function(resp){
+				
+		resp.on('data', function(chunk){
+			res.write(
+				chunk.toString()
+					 .replace("<head>" ,  "<head>"  + base)
+					 .replace("</body>" , "</body>" + inject) 
+			);
+		}).on('end', function(chunk){
+			res.end();
+		});
+
+	}).on("error", function(e){
+		console.log("Got error: " + e.message);
+	});
+    
+}
+
+
 exports.proxy = function(req, res){
 
 	var url    = req.query.url;
